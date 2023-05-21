@@ -434,5 +434,6 @@ class Deque {
 
     ~Deque() {
         delElements();
+        delChunks(arr);
     }
 };
