@@ -114,7 +114,7 @@ class Deque {
         }
     }
 
-    Deque(int n) : Deque(n, T()) {}  /// CRINGE
+    Deque(int n) : Deque(n, T()) {} 
 
     Deque(int n, const T& el) : arr(devByChunk(n), nullptr) {
         setChunks(arr);
@@ -203,9 +203,6 @@ class Deque {
     void pop_back() {
         --sz;
         getPtr(sz)->~T();
-        // if(sz == 0) { ///////////mayebe ivalid iter
-        //  setStart();
-        //}
     }
 
     void push_front(const T& el) {
@@ -213,7 +210,7 @@ class Deque {
             std::vector<T*> newarr(
                 std::max(static_cast<size_t>(3), arr.size() * 3), nullptr);
             size_t startRow = newarr.size() / 3;
-            size_t start = startRow * CHUNK;  // first == 0
+            size_t start = startRow * CHUNK;
             for (size_t i = 0; i < arr.size(); ++i) {
                 newarr[i + startRow] = arr[i];
             }
@@ -240,10 +237,6 @@ class Deque {
         getPtr(0)->~T();
         ++first;
         --sz;
-
-        // if(sz == 0) { ///////////mayebe ivalid iter
-        //  setStart();
-        //}
     }
 
     template <bool IsConst>
