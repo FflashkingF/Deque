@@ -273,9 +273,6 @@ class Deque {
             arr = other.arr;
             return *this;
         }
-        // operator CommonIterator<true>() const {
-        // return CommonIterator<true>(row, col, arr);
-        //}
         CommonIterator& operator++() {
             ++col;
             if (col == CHUNK) {
