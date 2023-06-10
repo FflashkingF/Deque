@@ -2,3 +2,7 @@ test_*
 .idea
 .vscode
 .DS_Store
+deque_test
+llvm.sh
+llvm.sh.1
+CMakeLists.txt

@@ -254,16 +254,30 @@ class Deque {
 
         int row, col;
         ppointer arr;
+        pointer fast_point;
+        size_t size;
 
       public:
-        CommonIterator(int r, int c, ppointer arr) : row(r), col(c), arr(arr) {}
+        CommonIterator(int r, int c, ppointer arr, size_t sz)
+            : row(r),
+              col(c),
+              arr(arr),
+              fast_point(sz > 0 && static_cast<size_t>(r) < sz ? arr[r] + c
+                                                               : nullptr),
+              size(sz) {}
 
         CommonIterator(const CommonIterator<false>& other)
-            : row(other.row), col(other.col), arr(other.arr) {}
+            : row(other.row),
+              col(other.col),
+              arr(other.arr),
+              fast_point(other.fast_point),
+              size(other.size) {}
         CommonIterator& operator=(const CommonIterator<false>& other) {
             row = other.row;
             col = other.col;
             arr = other.arr;
+            fast_point = other.fast_point;
+            size = other.size;
             return *this;
         }
         CommonIterator& operator++() {
@@ -271,6 +285,11 @@ class Deque {
             if (col == CHUNK) {
                 ++row;
                 col = 0;
+                if (static_cast<size_t>(row) < size) {
+                    fast_point = arr[row];
+                }
+            } else {
+                ++fast_point;
             }
             return *this;
         }
@@ -279,8 +298,12 @@ class Deque {
             if (col == 0) {
                 col = CHUNK - 1;
                 --row;
+                if (row >= 0) {
+                    fast_point = arr[row] + col;
+                }
             } else {
                 --col;
+                --fast_point;
             }
             return *this;
         }
@@ -301,6 +324,9 @@ class Deque {
             int ind = row * CHUNK + col + x;
             row = Deque::row(ind);
             col = Deque::col(ind);
+            if (static_cast<size_t>(row) < size) {
+                fast_point = arr[row] + col;
+            }
             return *this;
         }
 
@@ -342,11 +368,11 @@ class Deque {
         }
 
         reference operator*() const {
-            return *(arr[row] + col);
+            return *fast_point;
         }
 
         pointer operator->() const {
-            return arr[row] + col;
+            return fast_point;
         }
 
         int ind() const {
@@ -364,23 +390,25 @@ class Deque {
     using const_iterator = CommonIterator<true>;
 
     iterator begin() {
-        return iterator(row(first), col(first), arr.data());
+        return iterator(row(first), col(first), arr.data(), arr.size());
     }
     const_iterator begin() const {
         return cbegin();
     }
     const_iterator cbegin() const {
-        return const_iterator(row(first), col(first), arr.data());
+        return const_iterator(row(first), col(first), arr.data(), arr.size());
     }
 
     iterator end() {
-        return iterator(row(first + sz), col(first + sz), arr.data());
+        return iterator(row(first + sz), col(first + sz), arr.data(),
+                        arr.size());
     }
     const_iterator end() const {
         return cend();
     }
     const_iterator cend() const {
-        return const_iterator(row(first + sz), col(first + sz), arr.data());
+        return const_iterator(row(first + sz), col(first + sz), arr.data(),
+                              arr.size());
     }
 
     std::reverse_iterator<iterator> rbegin() {
